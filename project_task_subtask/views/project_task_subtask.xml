@@ -9,7 +9,7 @@
           <page string="Checklist">
             <field name="default_user" invisible='True'/>
             <field name="subtask_ids" context="{'default_user_id': default_user}">
-              <tree string="Task Work" editable="bottom" colors="red:recolor == True;gray:state == 'cancelled';green:state == 'done'">
+              <tree string="Task Work" editable="bottom" colors="red:recolor == True;gray:state == 'cancelled';green:state == 'done';#b818ce:state == 'waiting'">
                   <field name="name"/>
                   <field name="recolor" invisible='True'/>
                   <field name="user_id"/>
@@ -17,8 +17,10 @@
                   <field name="hide_button" invisible='True'/>
                   <button name="change_state_done" string="Change state to DONE" type="object" icon="fa-check" attrs="{'invisible': ['|', ('state', 'in',['done', 'cancelled']), ('hide_button', '=', True)]}"/>
                   <button name="change_state_todo" string="Change state to TODO" type="object" icon="fa-caret-square-o-right" attrs="{'invisible': [ '|',('state', '=', 'todo'), ('hide_button', '=', True)]}"/>
+                  <button name="change_state_waiting" type="object" string="Change state to WAITING" icon="fa-pause" attrs="{'invisible': [ '|',('state', '=', 'waiting'), ('hide_button', '=', True)]}"/>
                   <button name="change_state_cancelled" type="object" string="Change state to CANCELLED" icon="fa-ban" attrs="{'invisible': [ '|',('state', '=', 'cancelled'), ('hide_button', '=', True)]}"/>
                   <field name="reviewer_id"/>
+                  <field name="deadline"/>
                 </tree>
             </field>
           </page>
@@ -35,9 +37,9 @@
           <field name="subtask_ids"/>
           <field name="kanban_subtasks"/>
         </xpath>
-        <xpath expr="//t[@t-name ='kanban-box']" position="inside">
+        <xpath expr="//div[@class = 'oe_kanban_content']" position="inside">
           <div>
-             <t t-raw="record.kanban_subtasks.raw_value"/> 
+             <t t-raw="record.kanban_subtasks.raw_value"/>
           </div>
         </xpath>
       </field>
@@ -65,6 +67,7 @@
       <field name="model">project.task.subtask</field>
       <field name="arch" type="xml">
         <search string="Filter">
+          <field name="name" string="Description"/>
           <filter string="My" domain="[('user_id','=',uid)]" name="my_subtask"/>
           <separator/>
           <filter string="TODO" domain="[('state','=','todo')]" name="done_subtask"/>
